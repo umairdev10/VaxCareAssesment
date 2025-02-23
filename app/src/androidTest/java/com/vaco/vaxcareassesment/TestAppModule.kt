@@ -1,4 +1,4 @@
-package com.vaco.vaxcareassesment.di
+package com.vaco.vaxcareassesment
 
 import android.content.Context
 import androidx.room.Room
@@ -19,10 +19,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object TestAppModule {
     @Provides
     @Singleton
-    fun provideApiInterface(): ApiInterface {
+    fun provideFakeApiInterface(): ApiInterface {
         return Retrofit.Builder()
             .baseUrl("https://gist.githubusercontent.com/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -32,20 +32,19 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): BookDatabase {
-        return Room.databaseBuilder(
+        return Room.inMemoryDatabaseBuilder(
             context,
-            BookDatabase::class.java,
-            BookDatabase.DATABASE_NAME
+            BookDatabase::class.java
         ).build()
     }
 
     @Provides
-    fun provideBookDao(database: BookDatabase): BookDAO {
+    fun provideFakeBookDao(database: BookDatabase): BookDAO {
         return database.bookDao()
     }
 
     @Provides
-    fun provideBookRepository(apiInterface: ApiInterface, bookDao: BookDAO): BooksRepository {
-        return BooksRepositoryImpl(apiInterface, bookDao)
+    fun provideFakeBookRepository(): BooksRepository {
+        return FakeBookRepositoryImpl()
     }
 }
